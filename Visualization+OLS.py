@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pandas as pd
@@ -47,7 +47,91 @@ df = import_data()
 print(df)
 
 
-# In[2]:
+# In[ ]:
+
+
+import pandas as pd
+
+link = '/home/jovyan/Econ-481-Final-Project/Statistical Review of World Energy Data.xlsx'
+
+def import_data() -> pd.DataFrame:
+
+    df1 = download_individual_sheet_oil()
+    df2 = download_individual_sheet_gas()
+    df3 = download_individual_sheet_coal()
+    df4 = download_individual_sheet_CO2()
+    df_list = [df1, df2, df3, df4]
+
+    combined_df = pd.concat(df_list, axis=1)
+
+    return combined_df
+
+def download_individual_sheet_oil() -> pd.DataFrame:
+    #link = 'Statistical Review of World Energy Data.xlsx'
+    data = pd.read_excel(link, sheet_name = 'Oil - Spot crude prices', skiprows = 3, usecols = range(0, 5))
+
+    data.rename({data.columns[0]: 'Year'}, axis=1, inplace=True)
+    data = data.set_index(data.columns[0])
+    data.drop(data.tail(4).index, inplace = True)
+
+    data = data[data.index.notnull()]
+    data.replace('-', None, inplace = True)
+
+    data = data.mean(axis = 1, skipna = True).to_frame()
+    data.rename({data.columns[0]: 'Avg Oil Prices'}, axis = 1, inplace = True)
+
+    return data
+
+
+def download_individual_sheet_gas() -> pd.DataFrame:
+    #link = 'Statistical Review of World Energy Data.xlsx'
+    data = pd.read_excel(link, sheet_name = 'Gas Prices ', skiprows = 4, usecols = range(0, 8))
+    data.rename({data.columns[0]: 'Year'}, axis=1, inplace=True)
+    data = data.set_index(data.columns[0])
+    data.drop(data.tail(8).index, inplace = True)
+
+    data.replace('-', None, inplace = True)
+
+    data = data.mean(axis = 1, skipna = True).to_frame()
+    data.rename({data.columns[0]: 'Avg Gas Prices'}, axis = 1, inplace = True)
+
+    return data
+
+def download_individual_sheet_coal() -> pd.DataFrame:
+    #link = 'Statistical Review of World Energy Data.xlsx'
+    data = pd.read_excel(link, sheet_name = 'Coal Prices', skiprows = 2, usecols = range(0, 9))
+    data.rename({data.columns[0]: 'Year'}, axis=1, inplace=True)
+    data = data.set_index(data.columns[0])
+    data.drop(data.tail(8).index, inplace = True)
+
+    data.replace('-', None, inplace = True)
+
+    data = data.mean(axis = 1, skipna = True).to_frame()
+    data.rename({data.columns[0]: 'Coal Prices'}, axis = 1, inplace = True)
+
+
+    return data
+
+def download_individual_sheet_CO2() -> pd.DataFrame:
+    path = 'Statistical Review of World Energy Data.xlsx'
+    data = pd.read_excel(path, sheet_name = 'CO2 Emissions from Energy', skiprows = 2, usecols = range(1, 59))
+    data = data.iloc[[107]]
+
+    data = data.transpose()
+    data.index.name = 'Year'
+
+    data.rename({data.columns[0]: 'Avg CO2 Emissions'}, axis=1, inplace=True)
+
+    data['Avg CO2 Emissions'] = data['Avg CO2 Emissions'].div(92)
+
+    return data
+
+
+df_prices = import_data()
+print(df_prices)
+
+
+# In[ ]:
 
 
 us = df[df.Country == 'US']
@@ -58,7 +142,7 @@ plt.xticks(np.arange(116, 173, step=19), labels=[str(19*i+1965) for i in range(3
 ax.set_title("CO2 Emissions from Energy from US")
 
 
-# In[3]:
+# In[ ]:
 
 
 mex = df[df.Country == 'Mexico']
@@ -69,7 +153,7 @@ plt.xticks(np.arange(58, 115, step=19), labels=[str(19*i+1965) for i in range(3)
 ax.set_title("CO2 Emissions from Energy from Mexico")
 
 
-# In[4]:
+# In[ ]:
 
 
 can = df[df.Country == 'Canada']
@@ -80,7 +164,7 @@ plt.xticks(np.arange(0, 57, step=19), labels=[str(19*i+1965) for i in range(3)])
 ax.set_title("CO2 Emissions from Energy from Canada")
 
 
-# In[5]:
+# In[ ]:
 
 
 year = {}
@@ -89,7 +173,7 @@ for i in range(58):
 print(year[0])
 
 
-# In[6]:
+# In[ ]:
 
 
 for i in range(58):
@@ -97,13 +181,13 @@ for i in range(58):
 print(year[57])
 
 
-# In[7]:
+# In[ ]:
 
 
 print(year[57]["TotalCO2"].values[0])
 
 
-# In[8]:
+# In[ ]:
 
 
 df1 = [*range(58)]
@@ -112,14 +196,14 @@ for i in range(58):
 print(df1)
 
 
-# In[9]:
+# In[ ]:
 
 
 df2 = [*range(1965, 2023, 1)]
 print(df2)
 
 
-# In[10]:
+# In[ ]:
 
 
 plt.plot(df2, df1)
@@ -129,7 +213,7 @@ plt.ylabel('Total CO2')
 plt.show()
 
 
-# In[11]:
+# In[ ]:
 
 
 usoil = df[df.Country == 'US']
@@ -140,7 +224,7 @@ plt.xticks(np.arange(116, 173, step=19), labels=[str(19*i+1965) for i in range(3
 ax.set_title("Oil Consumption from US (EJ)")
 
 
-# In[12]:
+# In[ ]:
 
 
 mexoil = df[df.Country == 'Mexico']
@@ -151,7 +235,7 @@ plt.xticks(np.arange(58, 115, step=19), labels=[str(19*i+1965) for i in range(3)
 ax.set_title("Oil Consumption from Mexico (EJ)")
 
 
-# In[13]:
+# In[ ]:
 
 
 canoil = df[df.Country == 'Canada']
@@ -164,7 +248,7 @@ ax.set_title("Oil Consumption from Canada (EJ)")
 
 # ## Coal Consumption
 
-# In[14]:
+# In[ ]:
 
 
 uscoal = df[df.Country == 'US']
@@ -175,7 +259,7 @@ plt.xticks(np.arange(116, 173, step=19), labels=[str(19*i+1965) for i in range(3
 ax.set_title("Coal Consumption from US (EJ)")
 
 
-# In[15]:
+# In[ ]:
 
 
 cancoal = df[df.Country == 'Canada']
@@ -186,7 +270,7 @@ plt.xticks(np.arange(0, 57, step=19), labels=[str(19*i+1965) for i in range(3)])
 ax.set_title("Coal Consumption from Canada (EJ)")
 
 
-# In[16]:
+# In[ ]:
 
 
 mexcoal = df[df.Country == 'Mexico']
@@ -199,7 +283,7 @@ ax.set_title("Coal Consumption from Mexico (EJ)")
 
 # ## Gas Consumption
 
-# In[17]:
+# In[ ]:
 
 
 mexgas = df[df.Country == 'Mexico']
@@ -210,7 +294,7 @@ plt.xticks(np.arange(58, 115, step=19), labels=[str(19*i+1965) for i in range(3)
 ax.set_title("Gas Consumption from Mexico")
 
 
-# In[18]:
+# In[ ]:
 
 
 cangas = df[df.Country == 'Canada']
@@ -221,7 +305,7 @@ plt.xticks(np.arange(0, 57, step=19), labels=[str(19*i+1965) for i in range(3)])
 ax.set_title("Gas Consumption from Canada (EJ)")
 
 
-# In[19]:
+# In[ ]:
 
 
 usgas = df[df.Country == 'US']
@@ -234,7 +318,7 @@ ax.set_title("Gas Consumption from US (EJ)")
 
 # ## Total Oil
 
-# In[20]:
+# In[ ]:
 
 
 for i in range(58):
@@ -242,7 +326,7 @@ for i in range(58):
 print(year[57])
 
 
-# In[21]:
+# In[ ]:
 
 
 df3 = [*range(58)]
@@ -251,7 +335,7 @@ for i in range(58):
 print(df3)
 
 
-# In[22]:
+# In[ ]:
 
 
 plt.plot(df2, df3)
@@ -263,7 +347,7 @@ plt.show()
 
 # ## Total Coal
 
-# In[23]:
+# In[ ]:
 
 
 for i in range(58):
@@ -271,7 +355,7 @@ for i in range(58):
 print(year[57])
 
 
-# In[24]:
+# In[ ]:
 
 
 df4 = [*range(58)]
@@ -279,7 +363,7 @@ for i in range(58):
     df4[i] = year[i]["TotalCoal"].values[0]
 
 
-# In[25]:
+# In[ ]:
 
 
 plt.plot(df2, df4)
@@ -291,14 +375,14 @@ plt.show()
 
 # ## Gas Consumption
 
-# In[26]:
+# In[ ]:
 
 
 for i in range(58):
     year[i]["TotalGas"] = sum(year[i]["Gas Consumption - EJ"])
 
 
-# In[27]:
+# In[ ]:
 
 
 df5 = [*range(58)]
@@ -306,7 +390,7 @@ for i in range(58):
     df5[i] = year[i]["TotalGas"].values[0]
 
 
-# In[28]:
+# In[ ]:
 
 
 plt.plot(df2, df5)
@@ -316,9 +400,9 @@ plt.ylabel('Total Gas Consumption (EJ)')
 plt.show()
 
 
-# ## OLS
+# ## OLS for Consumption
 
-# In[29]:
+# In[ ]:
 
 
 import pandas as pd
@@ -376,5 +460,28 @@ ols(df)
 # In[ ]:
 
 
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
+def PricesReg(df_prices: pd.DataFrame):
+  model = LinearRegression()
+  df_prices = import_data()
+  subset = df_prices[15:50]
+  subset_train, subset_test = train_test_split(
+        subset,
+        test_size = 0.2,
+        random_state = 12
+    )
+  predictors = ['Avg Oil Prices', 'Avg Gas Prices', 'Coal Prices']
+  x_train = subset_train[predictors].to_numpy()
+  x_test = subset_test[predictors].to_numpy()
+  y_train = subset_train['Avg CO2 Emissions']
+  model = model.fit(x_train, y_train)
+  score = model.score(x_train, y_train)
+  coef = model.coef_
+  print(score)
+  print(coef)
+
+PricesReg(df_prices)
 
