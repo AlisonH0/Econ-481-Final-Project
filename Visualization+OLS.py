@@ -369,9 +369,7 @@ def ols(df: pd.DataFrame):
         plt.title(f'Actual vs Predicted CO2 Emissions for {i}')
         plt.show()
 
-# Example usage
-# df = pd.read_csv('your_data.csv')
-# ols(df)
+
 ols(df)
 
 
